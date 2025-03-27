@@ -25,3 +25,18 @@ Route::prefix('v1')->middleware('api')->group(function(){
         Route::get('me', [AuthController::class, 'me']);
     });
 });
+
+
+Route::prefix('v1')->middleware(['api', 'jwt.verify'])->group(function(){
+    Route::prefix('employees')->group(function(){
+
+    });
+
+    Route::prefix('production-departments')->group(function(){
+
+    });
+
+    Route::prefix('access-attempts')->group(function(){
+
+    });
+});
