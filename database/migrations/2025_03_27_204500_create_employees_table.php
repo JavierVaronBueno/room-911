@@ -13,6 +13,12 @@ return new class extends Migration
     {
         Schema::create('employees', function (Blueprint $table) {
             $table->id();
+            $table->text('photo');
+            $table->string('internal_id')->unique();
+            $table->string('first_name');
+            $table->string('last_name');
+            $table->foreignId('production_department_id')->constrained('production_departments')->onDelete('cascade');
+            $table->boolean('has_room_911_access')->default(false);
             $table->timestamps();
         });
     }

@@ -8,4 +8,19 @@ use Illuminate\Database\Eloquent\Model;
 class Employee extends Model
 {
     use HasFactory;
+
+    public $table = 'employees';
+    protected $fillable = array('*');
+
+    // Relationship: An employee belongs to a department
+    public function productionDepartment()
+    {
+        return $this->belongsTo(ProductionDepartment::class, 'production_department_id');
+    }
+
+    // Relationship: One employee has many access attempts
+    public function accessAttempts()
+    {
+        return $this->hasMany(AccessAttempt::class, 'employee_id');
+    }
 }
