@@ -9,7 +9,9 @@ class ProductionDepartment extends Model
 {
     use HasFactory;
     public $table = 'production_departments';
-    protected $fillable = array('*');
+    protected $fillable = [
+        'name'
+    ];
 
     // Relationship: A department has many employees
     public function employees()

@@ -5,8 +5,8 @@ namespace App\Http\Middleware;
 use Closure;
 use Exception;
 use Firebase\JWT\ExpiredException;
-use Firebase\JWT\JWT;
-use Firebase\JWT\Key;
+// use Firebase\JWT\JWT;
+// use Firebase\JWT\Key;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response as HttpResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -29,7 +29,7 @@ class JwtMiddleware
 
         try {
             $token = str_replace('Bearer ', '', $token);
-            $decoded = JWT::decode($token, new Key(env('JWT_SECRET'), 'HS256'));
+            // $decoded = JWT::decode($token, new Key(env('JWT_SECRET'), 'HS256'));
             return $next($request);
         } catch (ExpiredException $exp) {
             return response()->json([

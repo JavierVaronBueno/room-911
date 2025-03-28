@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\ProductionDepartmentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -37,7 +38,8 @@ Route::prefix('v1')->middleware(['api', 'jwt.verify'])->group(function(){
     });
 
     Route::prefix('production-departments')->group(function(){
-
+        Route::post('/', [ProductionDepartmentController::class, 'store']);
+        Route::get('/', [ProductionDepartmentController::class, 'index']);
     });
 
     Route::prefix('access-attempts')->group(function(){
