@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('employees', function (Blueprint $table) {
             $table->id();
-            $table->text('photo');
+            $table->string('photo_path')->default('employees/default_user.png');
             $table->string('internal_id')->unique();
             $table->string('first_name');
             $table->string('last_name');

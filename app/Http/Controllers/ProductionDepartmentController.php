@@ -38,7 +38,6 @@ class ProductionDepartmentController extends Controller
                 'error' => $e->getMessage()
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-
     }
 
     public function index()

@@ -10,7 +10,14 @@ class Employee extends Model
     use HasFactory;
 
     public $table = 'employees';
-    protected $fillable = array('*');
+    protected $fillable = [
+        'photo_path',
+        'internal_id',
+        'first_name',
+        'last_name',
+        'production_department_id',
+        'has_room_911_access',
+    ];
 
     // Relationship: An employee belongs to a department
     public function productionDepartment()
