@@ -1,0 +1,4 @@
+internal_id,first_name,last_name,production_department_id,has_room_911_access
+EMP001,Juan,Pérez,1,1
+EMP002,María,Gómez,2,0
+EMP003,Carlos,López,1,1

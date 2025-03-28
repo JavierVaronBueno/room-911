@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\EmployeeController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -29,7 +30,10 @@ Route::prefix('v1')->middleware('api')->group(function(){
 
 Route::prefix('v1')->middleware(['api', 'jwt.verify'])->group(function(){
     Route::prefix('employees')->group(function(){
-
+        Route::post('/', [EmployeeController::class, 'store']);
+        Route::post('/bulk', [EmployeeController::class, 'bulkUpload']);
+        Route::put('/{id}', [EmployeeController::class, 'update']);
+        Route::get('/search', [EmployeeController::class, 'search']);
     });
 
     Route::prefix('production-departments')->group(function(){
