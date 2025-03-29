@@ -9,10 +9,20 @@ use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\EmployeesImport;
 use Exception;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
+/**
+ * Manages employee-related operations including creation, updates, and searches.
+ */
 class EmployeeController extends Controller
 {
+    /**
+     * Creates a new employee record with the provided data.
+     *
+     * @param Request $request The HTTP request containing employee data
+     * @return \Illuminate\Http\JsonResponse JSON response with creation status and employee details
+     */
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -52,6 +62,12 @@ class EmployeeController extends Controller
         }
     }
 
+    /**
+     * Handles bulk upload of employee records from a CSV file.
+     *
+     * @param Request $request The HTTP request containing the CSV file
+     * @return \Illuminate\Http\JsonResponse JSON response with upload status and results
+     */
     public function bulkUpload(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -81,12 +97,20 @@ class EmployeeController extends Controller
                 'imported' => Employee::count()
             ], Response::HTTP_OK);
         } catch (\Exception $e) {
+            Log::debug($e->getMessage() . ' - ' . $e->getFile() . ' - ' . $e->getLine());
             return response()->json([
-                'error' => $e->getMessage()
+                'error' => 'An error occurred while loading the employee CSV file: ' . $e->getMessage()
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
+    /**
+     * Updates an existing employee record with the provided data.
+     *
+     * @param Request $request The HTTP request containing updated employee data
+     * @param int $id The ID of the employee to update
+     * @return \Illuminate\Http\JsonResponse JSON response with update status and employee details
+     */
     public function update(Request $request, int $id)
     {
         $employee = Employee::findOrFail($id);
@@ -138,12 +162,19 @@ class EmployeeController extends Controller
                 'employee' => $employee
             ], Response::HTTP_OK);
         } catch (Exception $e) {
+            Log::debug($e->getMessage() . ' - ' . $e->getFile() . ' - ' . $e->getLine());
             return response()->json([
-                'error' => $e->getMessage()
+                'error' => 'An error occurred while updating an employees data: ' . $e->getMessage()
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
+    /**
+     * Searches for employees based on provided criteria.
+     *
+     * @param Request $request The HTTP request containing search parameters
+     * @return \Illuminate\Http\JsonResponse JSON response with matching employee records
+     */
     public function search(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -181,6 +212,7 @@ class EmployeeController extends Controller
 
             return response()->json($query->get(), Response::HTTP_OK);
         } catch (Exception $e) {
+            Log::debug($e->getMessage() . ' - ' . $e->getFile() . ' - ' . $e->getLine());
             return response()->json([
                 'error' => 'An error occurred while searching for employee information: ' . $e->getMessage()
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
