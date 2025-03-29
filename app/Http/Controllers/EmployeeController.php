@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\EmployeesImport;
 use Exception;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
@@ -41,6 +42,8 @@ class EmployeeController extends Controller
         }
 
         try {
+            DB::beginTransaction();
+
             $data = $request->all();
 
             if ($request->hasFile('photo')) {
@@ -51,11 +54,16 @@ class EmployeeController extends Controller
             }
 
             $employee = Employee::create($data);
+
+            DB::commit();
+
             return response()->json([
                 'message' => 'Successfully Saved',
                 'employee' => $employee
             ], Response::HTTP_CREATED);
         } catch (Exception $e) {
+            DB::rollBack();
+            Log::debug($e->getMessage() . ' - ' . $e->getFile() . ' - ' . $e->getLine());
             return response()->json([
                 'error' => $e->getMessage()
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -131,6 +139,8 @@ class EmployeeController extends Controller
         }
 
         try {
+            DB::beginTransaction();
+
             $data = $request->all();
 
             // Handle the image upload if sent
@@ -157,11 +167,14 @@ class EmployeeController extends Controller
                 $employee->photo_url = Storage::url($employee->photo_path);
             }
 
+            DB::commit();
+
             return response()->json([
                 'message' => 'Successfully Updated',
                 'employee' => $employee
             ], Response::HTTP_OK);
         } catch (Exception $e) {
+            DB::rollBack();
             Log::debug($e->getMessage() . ' - ' . $e->getFile() . ' - ' . $e->getLine());
             return response()->json([
                 'error' => 'An error occurred while updating an employees data: ' . $e->getMessage()
