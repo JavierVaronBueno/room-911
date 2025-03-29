@@ -1,66 +1,345 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Room 911 API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+**Version:** 1.0.0  
+**Date:** March 29, 2025  
+**Author:** Javier Varon
 
-## About Laravel
+**Description:** Room 911 Backend is a RESTful API developed in Laravel 11 for managing employees, production departments, access attempts, and PDF report generation. This project includes JWT authentication, bulk employee import via CSV, and scheduled tasks for file cleanup.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Table of Contents
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- [Features](#features)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Project Structure](#project-structure)
+- [API Usage](#api-usage)
+- [Scheduled Tasks](#scheduled-tasks)
+- [Testing](#testing)
+- [Debugging and Logs](#debugging-and-logs)
+- [Deployment](#deployment)
+- [Contributions](#contributions)
+- [License](#license)
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Features
 
-## Learning Laravel
+- **Employee Management:** CRUD operations for employees with photos and associated departments.
+- **Bulk Import:** Loading employees from CSV files with detailed validation.
+- **Access Attempts:** Recording and querying access attempts with date filters.
+- **PDF Generation:** Access history reports dynamically generated and stored in storage.
+- **Authentication:** JWT to protect API routes.
+- **Scheduled Tasks:** Automatic cleanup of old PDFs.
+- **Storage:** Use of storage/app/public with public URLs for downloads.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Requirements
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+- **PHP:** 8.1 or higher
+- **Composer:** 2.x
+- **MySQL:** 5.7 or higher (or any database compatible with Laravel)
+- **Laravel:** 11.x
+- **Dependencies:**
+  - maatwebsite/excel for CSV import
+  - tymon/jwt-auth for JWT authentication
+  - barryvdh/laravel-dompdf for PDF generation
+- **Operating System:** Windows (Laragon recommended), Linux, or macOS
+- **Cron:** For scheduled tasks (Linux) or Task Scheduler (Windows)
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Installation
 
-## Laravel Sponsors
+### 1. Clone the Repository
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+```bash
+git clone https://github.com/JavierVaronBueno/room-911.git
+cd room-911
+```
 
-### Premium Partners
+### 2. Install Dependencies
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+```bash
+composer install
+```
 
-## Contributing
+### 3. Configure the Environment
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Copy the .env.example file to .env:
 
-## Code of Conduct
+```bash
+cp .env.example .env
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Edit .env with your settings:
 
-## Security Vulnerabilities
+```
+APP_NAME="Room 911 Backend"
+APP_ENV=local
+APP_KEY=base64:[generate-a-key-with-php-artisan-key:generate]
+APP_DEBUG=true
+APP_URL=http://localhost/room-911-backend/public
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=room_911
+DB_USERNAME=root
+DB_PASSWORD=
+
+JWT_SECRET=[generate-a-key-with-php-artisan-jwt:secret]
+```
+
+Generate application and JWT keys:
+
+```bash
+php artisan key:generate
+php artisan jwt:secret
+```
+
+### 4. Configure the Database
+
+Create the room_911 database in MySQL.
+Run migrations:
+
+```bash
+php artisan migrate
+```
+
+### 5. Configure Storage
+
+Create the symbolic link for storage:
+
+```bash
+php artisan storage:link
+```
+
+Create the directory for PDFs:
+
+```bash
+mkdir storage/app/public/access_histories
+chmod -R 775 storage
+```
+
+### 6. Start the Server
+
+Use Laravel's built-in server:
+
+```bash
+php artisan serve
+```
+
+Or configure Laragon to point to room-911-backend/public.
+
+## Configuration
+
+### JWT Authentication
+
+- **Middleware:** Routes are protected with jwt.auth (see app/Http/Middleware/JwtMiddleware.php).
+- **Generate Token:** Use the /api/auth/login endpoint with valid credentials.
+
+### Storage
+
+**Public Disk:** Configured in config/filesystems.php:
+
+```php
+'public' => [
+    'driver' => 'local',
+    'root' => storage_path('app/public'),
+    'url' => env('APP_URL').'/storage',
+    'visibility' => 'public',
+],
+```
+
+### Scheduled Tasks
+
+- **Command:** app:clean-old-pdfs removes PDFs older than 7 days.
+- **Frequency:** Configured to run every minute (see app/Console/Kernel.php).
+
+## Project Structure
+
+```
+room-911-backend/
+├── app/
+│   ├── Console/
+│   │   └── Commands/
+│   │       └── CleanOldPdfs.php       # Command to clean old PDFs
+│   ├── Http/
+│   │   ├── Controllers/
+│   │   │   ├── AccessAttemptController.php  # Access attempt management
+│   │   │   ├── EmployeeController.php       # Employee CRUD
+│   │   │   └── ProductionDepartmentController.php  # Department CRUD
+│   │   └── Middleware/
+│   │       └── JwtMiddleware.php     # JWT authentication middleware
+│   ├── Imports/
+│   │   └── EmployeesImport.php       # Bulk employee import
+│   └── Models/
+│       ├── Employee.php              # Employee model
+│       ├── ProductionDepartment.php  # Department model
+│       └── AccessAttempt.php         # Access attempt model
+├── config/
+│   ├── app.php                      # General configuration
+│   └── filesystems.php              # Storage configuration
+├── database/
+│   ├── migrations/                  # Database migrations
+│   └── seeders/                     # Seeders (optional)
+├── public/
+│   └── storage/                     # Symbolic link to storage/app/public
+├── resources/
+│   └── views/                       # Views (not used in API currently)
+├── routes/
+│   └── api.php                      # API route definitions
+├── storage/
+│   ├── app/
+│   │   └── public/
+│   │       └── access_histories/    # Directory for generated PDFs
+│   └── logs/
+│       └── laravel.log             # Application logs
+├── .env                             # Environment variables
+└── composer.json                    # Project dependencies
+```
+
+## API Usage
+
+### Main Endpoints
+
+- **Base URL:** http://localhost/room-911-backend/public/api/v1
+- **Authentication:** All routes require a JWT token in the header `Authorization: Bearer <token>`.
+
+### Employees
+
+- **Create Employee:** POST /employees
+  - Body: `{ "internal_id": "EMP001", "first_name": "John", "last_name": "Doe", "production_department_id": 1, "photo": [file] }`
+- **Update Employee:** PUT /employees/{id}
+- **Import CSV:** POST /employees/bulk
+  - Body: Form-data with csv: [file.csv]
+
+### Access Attempts
+
+- **History:** GET /access-attempts/employee/{employee_id}
+  - Query: ?start_date=2025-03-28&end_date=2025-03-28
+- **Download PDF:** GET /access-attempts/employee/{employee_id}/pdf
+  - Query: ?start_date=2025-03-28&end_date=2025-03-28
+  - Response: `{ "download_url": "http://localhost/room-911-backend/public/storage/access_histories/..." }`
+
+### Departments
+
+- **Create Department:** POST /production-departments
+  - Body: `{ "name": "Production A" }`
+
+### Request Example
+
+```bash
+curl -X GET "http://localhost/room-911-backend/public/api/v1/access-attempts/employee/4/pdf?start_date=2025-03-28&end_date=2025-03-28" \
+-H "Authorization: Bearer <token>"
+```
+
+## Scheduled Tasks
+
+### PDF Cleanup
+
+- **Command:** `php artisan app:clean-old-pdfs`
+- **Frequency:** Every minute (configurable in app/Console/Kernel.php).
+- **Logic:** Removes files in storage/app/public/access_histories older than 7 days.
+
+### Cron Configuration
+
+**On Linux:**
+
+```bash
+* * * * * cd /path/to/room-911-backend && php artisan schedule:run >> /dev/null 2>&1
+```
+
+**On Windows (Laragon):**
+Use the "Task Scheduler" to run `php artisan schedule:run` every minute.
+
+## Testing
+
+### Manual Testing
+
+Start the Server:
+
+```bash
+php artisan serve --port=8000
+```
+
+Test Endpoints with Postman or cURL.
+
+### Unit Tests (Optional)
+
+Create tests in tests/Feature/:
+
+```bash
+php artisan make:test EmployeeTest --unit
+```
+
+Run:
+
+```bash
+php artisan test
+```
+
+## Debugging and Logs
+
+- **Logs:** Check storage/logs/laravel.log for errors and scheduled task messages.
+- **Debugging:** Enable APP_DEBUG=true in .env to see error details in development.
+
+## Deployment
+
+### On a Linux Server
+
+**Upload Files:**
+Use Git or FTP to upload the project to /var/www/room-911-backend.
+
+**Configure Web Server (Nginx/Apache):**
+Point the domain to the /var/www/room-911-backend/public directory.
+
+Nginx configuration example:
+
+```nginx
+server {
+    listen 80;
+    server_name your-domain.com;
+    root /var/www/room-911-backend/public;
+    index index.php;
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location ~ \.php$ {
+        fastcgi_pass unix:/run/php/php8.1-fpm.sock;
+        fastcgi_index index.php;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        include fastcgi_params;
+    }
+}
+```
+
+**Permissions:**
+
+```bash
+chown -R www-data:www-data /var/www/room-911-backend
+chmod -R 775 /var/www/room-911-backend/storage
+```
+
+**Configure Cron:**
+As mentioned in [Scheduled Tasks](#scheduled-tasks).
+
+### In Production
+
+Change .env:
+
+```
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://your-domain.com
+```
+
+## Contributions
+
+1. Fork the repository.
+2. Create a branch: `git checkout -b feature/new-feature`.
+3. Commit your changes: `git commit -m "Add new feature"`.
+4. Push the branch: `git push origin feature/new-feature`.
+5. Open a Pull Request.
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is licensed under the MIT License (LICENSE).
