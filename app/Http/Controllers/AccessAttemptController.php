@@ -9,6 +9,7 @@ use Illuminate\Http\Response;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Carbon;
 use Exception;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -36,6 +37,8 @@ class AccessAttemptController extends Controller
         }
 
         try {
+            DB::beginTransaction();
+
             $internal_id = $request->internal_id;
             $employee = Employee::where('internal_id', $internal_id)->first();
             $access_granted = $employee && $employee->has_room_911_access;
@@ -51,11 +54,15 @@ class AccessAttemptController extends Controller
             if ($access_granted) {
                 $access_status = 'Access Granted';
             }
+
+            DB::commit();
+
             return response()->json([
                 'status' => $access_status,
                 'attempt' => $attempt
             ], Response::HTTP_OK);
         } catch (Exception $e) {
+            DB::rollBack();
             Log::debug($e->getMessage() . ' - ' . $e->getFile() . ' - ' . $e->getLine());
             return response()->json([
                 'error' => 'An error has occurred in the Access module' . $e->getMessage()
