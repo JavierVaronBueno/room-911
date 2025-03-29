@@ -1,9 +1,9 @@
 <?php
 
+use App\Http\Controllers\AccessAttemptController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\ProductionDepartmentController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -43,6 +43,8 @@ Route::prefix('v1')->middleware(['api', 'jwt.verify'])->group(function(){
     });
 
     Route::prefix('access-attempts')->group(function(){
-
+        Route::post('/simulate', [AccessAttemptController::class, 'simulateAccess']);
+        Route::get('/employee/{employee_id}', [AccessAttemptController::class, 'getAccessHistory']);
+        Route::get('/employee/{employee_id}/pdf', [AccessAttemptController::class, 'downloadAccessHistoryPdf']);
     });
 });

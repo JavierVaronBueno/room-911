@@ -10,7 +10,12 @@ class AccessAttempt extends Model
     use HasFactory;
 
     public $table = 'access_attempts';
-    protected $fillable = array('*');
+    protected $fillable = [
+        'employee_id',
+        'internal_id_attempted',
+        'access_granted',
+        'attempted_at',
+    ];
 
     protected $casts = [
         'access_granted' => 'boolean',

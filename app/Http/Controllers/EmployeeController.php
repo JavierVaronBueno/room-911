@@ -160,24 +160,30 @@ class EmployeeController extends Controller
             ], Response::HTTP_BAD_REQUEST);
         }
 
-        $query = Employee::query();
+        try {
+            $query = Employee::query();
 
-        if ($request->has('id')) {
-            $query->where('id', $request->id);
-        }
-        if ($request->has('internal_id')) {
-            $query->where('internal_id', $request->internal_id);
-        }
-        if ($request->has('first_name')) {
-            $query->where('first_name', 'like', '%' . $request->first_name . '%');
-        }
-        if ($request->has('last_name')) {
-            $query->where('last_name', 'like', '%' . $request->last_name . '%');
-        }
-        if ($request->has('production_department_id')) {
-            $query->where('production_department_id', $request->production_department_id);
-        }
+            if ($request->has('id')) {
+                $query->where('id', $request->id);
+            }
+            if ($request->has('internal_id')) {
+                $query->where('internal_id', $request->internal_id);
+            }
+            if ($request->has('first_name')) {
+                $query->where('first_name', 'like', '%' . $request->first_name . '%');
+            }
+            if ($request->has('last_name')) {
+                $query->where('last_name', 'like', '%' . $request->last_name . '%');
+            }
+            if ($request->has('production_department_id')) {
+                $query->where('production_department_id', $request->production_department_id);
+            }
 
-        return response()->json($query->get(), Response::HTTP_OK);
+            return response()->json($query->get(), Response::HTTP_OK);
+        } catch (Exception $e) {
+            return response()->json([
+                'error' => 'An error occurred while searching for employee information: ' . $e->getMessage()
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 }
