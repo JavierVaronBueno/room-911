@@ -63,7 +63,7 @@ class AccessAttemptController extends Controller
             ], Response::HTTP_OK);
         } catch (Exception $e) {
             DB::rollBack();
-            Log::debug($e->getMessage() . ' - ' . $e->getFile() . ' - ' . $e->getLine());
+            Log::error($e->getMessage() . ' - ' . $e->getFile() . ' - ' . $e->getLine());
             return response()->json([
                 'error' => 'An error has occurred in the Access module' . $e->getMessage()
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -110,7 +110,7 @@ class AccessAttemptController extends Controller
             $attempts = $query->get();
             return response()->json($attempts, Response::HTTP_OK);
         } catch (Exception $e) {
-            Log::debug($e->getMessage() . ' - ' . $e->getFile() . ' - ' . $e->getLine());
+            Log::error($e->getMessage() . ' - ' . $e->getFile() . ' - ' . $e->getLine());
             return response()->json([
                 'error' => 'An error occurred while retrieving access history: ' . $e->getMessage()
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -177,7 +177,7 @@ class AccessAttemptController extends Controller
                 'download_url' => $downloadUrl
             ], Response::HTTP_OK);
         } catch (Exception $e) {
-            Log::debug($e->getMessage() . ' - ' . $e->getFile() . ' - ' . $e->getLine());
+            Log::error($e->getMessage() . ' - ' . $e->getFile() . ' - ' . $e->getLine());
             return response()->json([
                 'error' => 'An error occurred while generating the PDF: ' . $e->getMessage()
             ], Response::HTTP_INTERNAL_SERVER_ERROR);

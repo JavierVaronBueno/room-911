@@ -63,7 +63,7 @@ class EmployeeController extends Controller
             ], Response::HTTP_CREATED);
         } catch (Exception $e) {
             DB::rollBack();
-            Log::debug($e->getMessage() . ' - ' . $e->getFile() . ' - ' . $e->getLine());
+            Log::error($e->getMessage() . ' - ' . $e->getFile() . ' - ' . $e->getLine());
             return response()->json([
                 'error' => $e->getMessage()
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -105,7 +105,7 @@ class EmployeeController extends Controller
                 'imported' => Employee::count()
             ], Response::HTTP_OK);
         } catch (\Exception $e) {
-            Log::debug($e->getMessage() . ' - ' . $e->getFile() . ' - ' . $e->getLine());
+            Log::error($e->getMessage() . ' - ' . $e->getFile() . ' - ' . $e->getLine());
             return response()->json([
                 'error' => 'An error occurred while loading the employee CSV file: ' . $e->getMessage()
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -175,7 +175,7 @@ class EmployeeController extends Controller
             ], Response::HTTP_OK);
         } catch (Exception $e) {
             DB::rollBack();
-            Log::debug($e->getMessage() . ' - ' . $e->getFile() . ' - ' . $e->getLine());
+            Log::error($e->getMessage() . ' - ' . $e->getFile() . ' - ' . $e->getLine());
             return response()->json([
                 'error' => 'An error occurred while updating an employees data: ' . $e->getMessage()
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -225,7 +225,7 @@ class EmployeeController extends Controller
 
             return response()->json($query->get(), Response::HTTP_OK);
         } catch (Exception $e) {
-            Log::debug($e->getMessage() . ' - ' . $e->getFile() . ' - ' . $e->getLine());
+            Log::error($e->getMessage() . ' - ' . $e->getFile() . ' - ' . $e->getLine());
             return response()->json([
                 'error' => 'An error occurred while searching for employee information: ' . $e->getMessage()
             ], Response::HTTP_INTERNAL_SERVER_ERROR);

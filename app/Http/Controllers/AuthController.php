@@ -5,11 +5,17 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
+/**
+ * Handles user authentication and authorization operations.
+ */
 class AuthController extends Controller
 {
     /**
@@ -29,13 +35,20 @@ class AuthController extends Controller
      */
     public function login()
     {
-        $credentials = request(['email', 'password']);
+        try {
+            $credentials = request(['email', 'password']);
 
-        if (! $token = auth()->attempt($credentials)) {
-            return response()->json(['error' => 'Unauthorized'], Response::HTTP_UNAUTHORIZED);
+            if (! $token = auth()->attempt($credentials)) {
+                return response()->json(['error' => 'Unauthorized'], Response::HTTP_UNAUTHORIZED);
+            }
+
+            return $this->respondWithToken($token);
+        } catch (Exception $e) {
+            Log::error($e->getMessage() . ' - ' . $e->getFile() . ' - ' . $e->getLine());
+            return response()->json([
+                'error' => 'An error occurred during login: ' . $e->getMessage()
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-
-        return $this->respondWithToken($token);
     }
 
     /**
@@ -61,18 +74,30 @@ class AuthController extends Controller
             return response()->json(['error' => $validate->messages()], Response::HTTP_BAD_REQUEST);
         }
 
-        $user = User::create([
-            'first_name' => $request->input('first_name'),
-            'last_name' => $request->input('last_name'),
-            'email' => $request->input('email'),
-            'password' => Hash::make($request->input('password')),
-            'rol' => $request->input('rol'),
-        ]);
+        try {
+            DB::beginTransaction();
 
-        return response()->json([
-            'message' => 'Successfully Saved',
-            'user' => $user
-        ], Response::HTTP_CREATED);
+            $user = User::create([
+                'first_name' => $request->input('first_name'),
+                'last_name' => $request->input('last_name'),
+                'email' => $request->input('email'),
+                'password' => Hash::make($request->input('password')),
+                'rol' => $request->input('rol'),
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'message' => 'Successfully Saved',
+                'user' => $user
+            ], Response::HTTP_CREATED);
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::error($e->getMessage() . ' - ' . $e->getFile() . ' - ' . $e->getLine());
+            return response()->json([
+                'error' => 'An error occurred during registration: ' . $e->getMessage()
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
@@ -82,7 +107,14 @@ class AuthController extends Controller
      */
     public function me()
     {
-        return response()->json(auth()->user());
+        try {
+            return response()->json(auth()->user());
+        } catch (Exception $e) {
+            Log::error($e->getMessage() . ' - ' . $e->getFile() . ' - ' . $e->getLine());
+            return response()->json([
+                'error' => 'An error occurred while retrieving user data: ' . $e->getMessage()
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
@@ -92,9 +124,16 @@ class AuthController extends Controller
      */
     public function logout()
     {
-        auth()->logout();
+        try {
+            auth()->logout();
 
-        return response()->json(['message' => 'Successfully logged out']);
+            return response()->json(['message' => 'Successfully logged out']);
+        } catch (Exception $e) {
+            Log::error($e->getMessage() . ' - ' . $e->getFile() . ' - ' . $e->getLine());
+            return response()->json([
+                'error' => 'An error occurred during logout: ' . $e->getMessage()
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
@@ -104,7 +143,14 @@ class AuthController extends Controller
      */
     public function refresh()
     {
-        return $this->respondWithToken(auth()->refresh());
+        try{
+            return $this->respondWithToken(auth()->refresh());
+        } catch (Exception $e) {
+            Log::error($e->getMessage() . ' - ' . $e->getFile() . ' - ' . $e->getLine());
+            return response()->json([
+                'error' => 'An error occurred while refreshing token: ' . $e->getMessage()
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
@@ -116,10 +162,17 @@ class AuthController extends Controller
      */
     protected function respondWithToken($token)
     {
-        return response()->json([
-            'access_token' => $token,
-            'token_type' => 'bearer',
-            'expires_in' => auth()->factory()->getTTL() * 60
-        ], Response::HTTP_OK);
+        try {
+            return response()->json([
+                'access_token' => $token,
+                'token_type' => 'bearer',
+                'expires_in' => auth()->factory()->getTTL() * 60
+            ], Response::HTTP_OK);
+        } catch (Exception $e) {
+            Log::error($e->getMessage() . ' - ' . $e->getFile() . ' - ' . $e->getLine());
+            return response()->json([
+                'error' => 'An error occurred while preparing token response: ' . $e->getMessage()
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 }

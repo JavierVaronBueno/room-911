@@ -49,7 +49,7 @@ class ProductionDepartmentController extends Controller
 
         } catch (Exception $e) {
             DB::rollBack();
-            Log::debug($e->getMessage() . ' - ' . $e->getFile() . ' - ' . $e->getLine());
+            Log::error($e->getMessage() . ' - ' . $e->getFile() . ' - ' . $e->getLine());
             return response()->json([
                 'error' => $e->getMessage()
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -70,7 +70,7 @@ class ProductionDepartmentController extends Controller
                 Response::HTTP_OK);
 
         } catch (Exception $e) {
-            Log::debug($e->getMessage() . ' - ' . $e->getFile() . ' - ' . $e->getLine());
+            Log::error($e->getMessage() . ' - ' . $e->getFile() . ' - ' . $e->getLine());
             return response()->json([
                 'error' => $e->getMessage()
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
