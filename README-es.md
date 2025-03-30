@@ -74,7 +74,7 @@ APP_NAME="Room 911 Backend"
 APP_ENV=local
 APP_KEY=base64:[genera-una-clave-con-php-artisan-key:generate]
 APP_DEBUG=true
-APP_URL=http://localhost/room-911-backend/public
+APP_URL=http://localhost/room-911/public
 
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
@@ -125,7 +125,7 @@ Usa el servidor integrado de Laravel:
 php artisan serve
 ```
 
-O configura Laragon para apuntar a room-911-backend/public.
+O configura Laragon para apuntar a room-911/public.
 
 ## Configuración
 
@@ -155,7 +155,7 @@ O configura Laragon para apuntar a room-911-backend/public.
 ## Estructura del Proyecto
 
 ```
-room-911-backend/
+room-911/
 ├── app/
 │   ├── Console/
 │   │   └── Commands/
@@ -199,7 +199,7 @@ room-911-backend/
 
 ### Endpoints Principales
 
-- **Base URL:** http://localhost/room-911-backend/public/api/v1
+- **Base URL:** http://localhost/room-911/public/api/v1
 - **Autenticación:** Todas las rutas requieren un token JWT en el encabezado `Authorization: Bearer <token>`.
 
 ### Empleados
@@ -216,7 +216,7 @@ room-911-backend/
   - Query: ?start_date=2025-03-28&end_date=2025-03-28
 - **Descargar PDF:** GET /access-attempts/employee/{employee_id}/pdf
   - Query: ?start_date=2025-03-28&end_date=2025-03-28
-  - Respuesta: `{ "download_url": "http://localhost/room-911-backend/public/storage/access_histories/..." }`
+  - Respuesta: `{ "download_url": "http://localhost/room-911/public/storage/access_histories/..." }`
 
 ### Departamentos
 
@@ -226,7 +226,7 @@ room-911-backend/
 ### Ejemplo de Solicitud
 
 ```bash
-curl -X GET "http://localhost/room-911-backend/public/api/v1/access-attempts/employee/4/pdf?start_date=2025-03-28&end_date=2025-03-28" \
+curl -X GET "http://localhost/room-911/public/api/v1/access-attempts/employee/4/pdf?start_date=2025-03-28&end_date=2025-03-28" \
 -H "Authorization: Bearer <token>"
 ```
 
@@ -243,7 +243,7 @@ curl -X GET "http://localhost/room-911-backend/public/api/v1/access-attempts/emp
 **En Linux:**
 
 ```bash
-* * * * * cd /path/to/room-911-backend && php artisan schedule:run >> /dev/null 2>&1
+* * * * * cd /path/to/room-911 && php artisan schedule:run >> /dev/null 2>&1
 ```
 
 **En Windows (Laragon):**
@@ -285,10 +285,10 @@ php artisan test
 ### En un Servidor Linux
 
 **Subir Archivos:**
-Usa Git o FTP para subir el proyecto a /var/www/room-911-backend.
+Usa Git o FTP para subir el proyecto a /var/www/room-911.
 
 **Configurar el Servidor Web (Nginx/Apache):**
-Apunta el dominio al directorio /var/www/room-911-backend/public.
+Apunta el dominio al directorio /var/www/room-911/public.
 
 Ejemplo de configuración Nginx:
 
@@ -296,7 +296,7 @@ Ejemplo de configuración Nginx:
 server {
     listen 80;
     server_name tu-dominio.com;
-    root /var/www/room-911-backend/public;
+    root /var/www/room-911/public;
     index index.php;
 
     location / {
@@ -315,8 +315,8 @@ server {
 **Permisos:**
 
 ```bash
-chown -R www-data:www-data /var/www/room-911-backend
-chmod -R 775 /var/www/room-911-backend/storage
+chown -R www-data:www-data /var/www/room-911
+chmod -R 775 /var/www/room-911/storage
 ```
 
 **Configurar Cron:**
