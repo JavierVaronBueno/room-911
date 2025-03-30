@@ -196,6 +196,7 @@ class EmployeeController extends Controller
             'first_name' => 'sometimes|string|max:255',
             'last_name' => 'sometimes|string|max:255',
             'production_department_id' => 'sometimes|exists:production_departments,id',
+            'production_department_name' => 'sometimes|string|max:255',
         ]);
 
         if ($validator->fails()) {
@@ -205,7 +206,7 @@ class EmployeeController extends Controller
         }
 
         try {
-            $query = Employee::query();
+            $query = Employee::with('productionDepartment');
 
             if ($request->has('id')) {
                 $query->where('id', $request->id);
@@ -221,6 +222,11 @@ class EmployeeController extends Controller
             }
             if ($request->has('production_department_id')) {
                 $query->where('production_department_id', $request->production_department_id);
+            }
+            if ($request->has('production_department_name')) {
+                $query->whereHas('productionDepartment', function($q) use ($request) {
+                    $q->where('name', 'like', '%' . $request->production_department_name . '%');
+                });
             }
 
             return response()->json($query->get(), Response::HTTP_OK);
